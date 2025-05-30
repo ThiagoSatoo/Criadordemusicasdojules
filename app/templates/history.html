@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Histórico de Músicas - Criador de Músicas por IA{% endblock %}
+
+{% block content %}
+    <h2>Histórico de Músicas Geradas</h2>
+
+    {% if history_items %}
+        <div class="history-list">
+            {% for item in history_items %}
+                <div class="history-item">
+                    <h3>{{ item.song_name | default('Música Sem Nome') }}</h3>
+                    <p><strong>Prompt Original:</strong> {{ item.original_prompt }}</p>
+                    <p><strong>Voz:</strong> {{ item.voice | default('N/A') }}</p>
+                    <p><strong>Ritmo:</strong> {{ item.rhythm | default('N/A') }}</p>
+                    <p><strong>Data da Geração:</strong> {{ item.timestamp }}</p>
+
+                    {% if item.audio_url %}
+                        <div>
+                            <audio controls src="{{ item.audio_url }}">
+                                Seu navegador não suporta o elemento de áudio.
+                            </audio>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <a href="{{ item.audio_url }}"
+                               download="{{ (item.song_name | default('musica_' + item.id) | replace(' ', '_') | replace('[^a-z0-9_\-À-ú]', '', true) ) + '.mp3' }}"
+                               class="button download-button">
+                               Baixar Música
+                            </a>
+                        </div>
+                    {% else %}
+                        <p class="error">URL do áudio não disponível.</p>
+                    {% endif %}
+
+                    {% if item.api_response_preview %}
+                        <details class="api-response-preview">
+                            <summary>Ver Detalhes da Resposta da API (Prévia)</summary>
+                            <pre>{{ item.api_response_preview | tojson(indent=2) }}</pre>
+                        </details>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>Nenhuma música foi gerada ainda. Vá para a <a href="{{ url_for('index') }}">página inicial</a> para criar uma!</p>
+    {% endif %}
+
+    <style>
+        .history-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive grid */
+            gap: 20px;
+        }
+        .history-item {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .history-item h3 {
+            margin-top: 0;
+            color: #0056b3;
+        }
+        .history-item p {
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        .history-item audio {
+            width: 100%;
+            margin-top: 10px;
+        }
+        .download-button {
+            font-size: 0.9rem;
+            padding: 8px 12px;
+        }
+        .api-response-preview {
+            margin-top: 15px;
+            font-size: 0.85rem;
+        }
+        .api-response-preview summary {
+            cursor: pointer;
+            color: #0056b3;
+            margin-bottom: 5px;
+        }
+        .api-response-preview pre {
+            background-color: #eee;
+            padding: 10px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 0.8rem;
+        }
+    </style>
+{% endblock %}

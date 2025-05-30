@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Configurações - Criador de Músicas por IA{% endblock %}
+
+{% block content %}
+    <h2>Configurações da API</h2>
+    <p>Insira sua chave da API do OpenRouter para usar o gerador de músicas.</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="flashes">
+        {% for category, message in messages %}
+          <li class="{{ category }}">{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+        <div>
+            <label for="api_key">Chave da API OpenRouter:</label>
+            <input type="password" id="api_key" name="api_key" value="{{ api_key if api_key }}" required>
+            <small>Sua chave será salva em `config.py` no servidor.</small>
+        </div>
+        <button type="submit" class="button" style="margin-top: 15px;">Salvar Chave da API</button>
+    </form>
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Gerador de Música - Criador de Músicas por IA{% endblock %}
+
+{% block content %}
+    <h2>Gerar Nova Música</h2>
+    <p>Descreva a música que você gostaria de criar. Selecione a voz, o ritmo e clique em "Gerar Música". Lembre-se que a música será limitada a 2 minutos.</p>
+
+    <form method="POST" class="generation-form">
+        <div class="prompt-section">
+            <h3>Seu Prompt Musical</h3>
+            <div>
+                <label for="prompt">Ideia para a música (ex: uma canção alegre sobre o verão):</label>
+                <textarea id="prompt" name="prompt" rows="4" required placeholder="Ex: Uma balada de rock épica sobre uma aventura espacial">{{ prompt_text if prompt_text }}</textarea>
+            </div>
+        </div>
+
+        <div class="options-section">
+            <h3>Opções de Geração</h3>
+            <div class="options-grid">
+                <div>
+                    <label for="voice_selection">Voz:</label>
+                    <select id="voice_selection" name="voice_selection">
+                        <option value="Instrumental" {% if voice_selection == "Instrumental" %}selected{% endif %}>Instrumental</option>
+                        <option value="Feminina" {% if voice_selection == "Feminina" %}selected{% endif %}>Voz Feminina</option>
+                        <option value="Masculina" {% if voice_selection == "Masculina" %}selected{% endif %}>Voz Masculina</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="rhythm_selection">Ritmo:</label>
+                    <select id="rhythm_selection" name="rhythm_selection">
+                        <option value="Pop" {% if rhythm_selection == "Pop" %}selected{% endif %}>Pop</option>
+                        <option value="Rock" {% if rhythm_selection == "Rock" %}selected{% endif %}>Rock</option>
+                        <option value="Eletrônica" {% if rhythm_selection == "Eletrônica" %}selected{% endif %}>Eletrônica</option>
+                        <option value="Jazz" {% if rhythm_selection == "Jazz" %}selected{% endif %}>Jazz</option>
+                        <option value="Samba" {% if rhythm_selection == "Samba" %}selected{% endif %}>Samba</option>
+                        <option value="Forró" {% if rhythm_selection == "Forró" %}selected{% endif %}>Forró</option>
+                        <option value="Hip Hop" {% if rhythm_selection == "Hip Hop" %}selected{% endif %}>Hip Hop</option>
+                        <option value="Funk" {% if rhythm_selection == "Funk" %}selected{% endif %}>Funk</option>
+                        <option value="Outro" {% if rhythm_selection == "Outro" %}selected{% endif %}>Outro (especifique no prompt)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="generation-section">
+            <button type="submit" class="button">Gerar Música</button>
+        </div>
+    </form>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flashes">
+            {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <div class="results-section">
+    {% if error_message and not audio_url %} {# Specific error from API or processing, no audio generated/found #}
+        <h3>Erro na Geração</h3>
+        <p class="error">{{ error_message }}</p>
+        {% if response_data %} {# If there's also raw response data, show it for debugging #}
+        <h4>Resposta da API:</h4>
+        <div class="response-area">
+            <pre>{{ response_data | tojson(indent=2) }}</pre>
+        </div>
+        {% endif %}
+    {% elif audio_url %} {# Successfully found an audio URL #}
+        <h3>Música Gerada</h3>
+        <p><strong>Nome da Música:</strong> <span id="songName">{{ song_name | default('Não especificado') }}</span></p>
+        <div>
+            <audio id="audioPlayer" controls>
+                Seu navegador não suporta o elemento de áudio.
+            </audio>
+        </div>
+        <div>
+            <a id="downloadButton" href="#" download="musica_gerada.mp3" class="button" style="margin-top: 10px; display: none;">Baixar Música</a>
+        </div>
+    {% elif response_data and not error_message %} {# Got a response, but no audio_url and no specific error_message was set #}
+        <h3>Resposta da API (sem URL de áudio)</h3>
+        <div class="response-area">
+            <pre>{{ response_data | tojson(indent=2) }}</pre>
+            <p class="error">Não foi possível encontrar uma URL de áudio na resposta da API.</p>
+        </div>
+    {% endif %}
+    </div>
+
+    <script>
+        const audioUrl = "{{ audio_url or '' }}";
+        const songName = "{{ song_name or 'musica_gerada' }}";
+
+        if (audioUrl) {
+            const audioPlayer = document.getElementById('audioPlayer');
+            const downloadButton = document.getElementById('downloadButton');
+
+            if (audioPlayer && downloadButton) {
+                audioPlayer.src = audioUrl;
+                downloadButton.href = audioUrl;
+                let filename = songName.replace(/[^a-z0-9_\-\sÀ-ú]/gi, '_').replace(/\s+/g, '_') + ".mp3";
+                downloadButton.download = filename;
+                downloadButton.style.display = 'inline-block';
+            }
+        }
+    </script>
+{% endblock %}
