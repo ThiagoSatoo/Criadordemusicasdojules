@@ -71,6 +71,7 @@ label {
 
 input[type="text"],
 input[type="password"],
+input[type="number"],
 textarea,
 select {
     width: 100%;
@@ -187,6 +188,15 @@ footer {
     margin-top: auto; /* Pushes footer to the bottom */
 }
 
+/* Style for helper text below inputs in the options grid */
+.options-grid div small {
+    display: block;
+    margin-top: -10px; /* Pull it closer to the input it describes */
+    margin-bottom: 10px; /* Add some space before the next element */
+    font-size: 0.8rem;
+    color: #555;
+}
+
 /* Responsive Design - Media Queries */
 
 /* Medium screens (tablets, landscape phones) */
@@ -273,4 +283,5 @@ footer {
         padding: 12px;
         font-size: 0.95rem;
     }
+
 }

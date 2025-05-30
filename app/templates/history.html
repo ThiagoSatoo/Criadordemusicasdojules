@@ -13,6 +13,10 @@
                     <p><strong>Prompt Original:</strong> {{ item.original_prompt }}</p>
                     <p><strong>Voz:</strong> {{ item.voice | default('N/A') }}</p>
                     <p><strong>Ritmo:</strong> {{ item.rhythm | default('N/A') }}</p>
+                    {% if item.main_instrument and item.main_instrument != 'Nenhum' %}
+                    <p><strong>Instrumento Principal:</strong> {{ item.main_instrument }}</p>
+                    {% endif %}
+                    <p><strong>Duração Solicitada:</strong> {{ item.music_duration | default('N/A') }} segundos</p>
                     <p><strong>Data da Geração:</strong> {{ item.timestamp }}</p>
 
                     {% if item.audio_url %}

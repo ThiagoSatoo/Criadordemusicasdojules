@@ -44,7 +44,7 @@ def load_history():
         print(f"Error reading history file {HISTORY_FILE_PATH}: {e}")
         return []
 
-def save_history_entry(original_prompt: str, voice: str, rhythm: str,
+def save_history_entry(original_prompt: str, voice: str, rhythm: str, main_instrument: str, music_duration: int,
                        constructed_prompt: str, song_name: str, audio_url: str,
                        response_data: dict):
     """
@@ -70,7 +70,9 @@ def save_history_entry(original_prompt: str, voice: str, rhythm: str,
         "original_prompt": original_prompt,
         "voice": voice,
         "rhythm": rhythm,
-        "constructed_prompt": constructed_prompt, # The prompt actually sent to API
+        "main_instrument": main_instrument or "Nenhum",
+        "music_duration": music_duration, # Store music duration
+        "constructed_prompt": constructed_prompt,
         "song_name": song_name or "Não especificado",
         "audio_url": audio_url,
         "api_response_preview": { # Storing a preview, not the whole potentially massive response
@@ -111,7 +113,9 @@ if __name__ == '__main__':
         original_prompt="A happy folk song about a river",
         voice="Feminina",
         rhythm="Pop",
-        constructed_prompt="Crie uma música no ritmo Pop com voz Feminina sobre: A happy folk song about a river. A música deve ter no máximo 2 minutos de duração.",
+        main_instrument="Violão",
+        music_duration=120,
+        constructed_prompt="Crie uma música no ritmo Pop com voz Feminina sobre: A happy folk song about a river. Destaque o instrumento Violão. A música deve ter aproximadamente 120 segundos de duração.",
         song_name="River's Joy",
         audio_url="http://example.com/music/rivers_joy.mp3",
         response_data=test_response

@@ -34,11 +34,23 @@ def index():
     # Default selections for GET request
     voice_selection = "Instrumental"
     rhythm_selection = "Pop"
+    music_duration_selection = 120 # Default duration for GET
+    main_instrument_selection = "" # Default for GET
 
     if request.method == 'POST':
         original_prompt = request.form.get('prompt')
         voice_selection = request.form.get('voice_selection', 'Instrumental')
         rhythm_selection = request.form.get('rhythm_selection', 'Pop')
+        main_instrument_selection = request.form.get('main_instrument', '').strip()
+
+        try:
+            music_duration_selection = int(request.form.get('music_duration', 120))
+            if not (30 <= music_duration_selection <= 300):
+                flash("Duração inválida. Usando 120 segundos.", "warning")
+                music_duration_selection = 120
+        except ValueError:
+            flash("Valor de duração inválido. Usando 120 segundos.", "warning")
+            music_duration_selection = 120
 
         # Store original prompt for re-rendering the form
         prompt_text = original_prompt
@@ -53,12 +65,28 @@ def index():
         if not original_prompt:
             error_message = "O prompt original não pode estar vazio."
         else:
-            # Construct the detailed prompt
-            duration_limit_text = "A música deve ter no máximo 2 minutos de duração."
+            prompt_parts = []
+
+            # 1. Tipo de música e voz + Ritmo
             if voice_selection == "Instrumental":
-                detailed_prompt = f"Crie uma música instrumental no ritmo {rhythm_selection} sobre: {original_prompt}. {duration_limit_text}"
-            else:
-                detailed_prompt = f"Crie uma música no ritmo {rhythm_selection} com voz {voice_selection} sobre: {original_prompt}. {duration_limit_text}"
+                prompt_parts.append(f"Crie uma música instrumental no ritmo {rhythm_selection}")
+            elif voice_selection == "revezando":
+                prompt_parts.append(f"Crie uma música com vozes masculina e feminina se revezando, no ritmo {rhythm_selection}")
+            else: # Feminina, Masculina
+                prompt_parts.append(f"Crie uma música com voz {voice_selection.lower()} no ritmo {rhythm_selection}")
+
+            # 2. Tema
+            # Using f-string for clarity and explicit quotes around original_prompt
+            prompt_parts.append(f"sobre o tema: \"{original_prompt}\".")
+
+            # 3. Instrumento Principal (Opcional)
+            if main_instrument_selection:
+                prompt_parts.append(f"Dê destaque ao instrumento {main_instrument_selection}, se possível.")
+
+            # 4. Duração
+            prompt_parts.append(f"A música deve ter uma duração aproximada de {music_duration_selection} segundos.")
+
+            detailed_prompt = " ".join(prompt_parts)
 
             print(f"Constructed prompt: {detailed_prompt}") # For debugging
 
@@ -106,15 +134,16 @@ def index():
                 else:
                     # Successfully got an audio_url, save to history
                     save_history_entry(
-                        original_prompt=original_prompt, # The user's initial prompt
+                        original_prompt=original_prompt,
                         voice=voice_selection,
                         rhythm=rhythm_selection,
-                        constructed_prompt=detailed_prompt, # The prompt sent to the API
+                        main_instrument=main_instrument_selection,
+                        music_duration=music_duration_selection,
+                        constructed_prompt=detailed_prompt,
                         song_name=song_name,
                         audio_url=audio_url,
-                        response_data=response_data # The full API response
+                        response_data=response_data
                     )
-                    # Potentially save or log response_data if needed
                     pass
 
     return render_template('index.html',
@@ -124,7 +153,9 @@ def index():
                            audio_url=audio_url,
                            song_name=song_name,
                            voice_selection=voice_selection,
-                           rhythm_selection=rhythm_selection)
+                           rhythm_selection=rhythm_selection,
+                           music_duration_selection=music_duration_selection,
+                           main_instrument_selection=main_instrument_selection)
 
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():

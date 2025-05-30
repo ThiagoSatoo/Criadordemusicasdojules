@@ -24,6 +24,7 @@
                         <option value="Instrumental" {% if voice_selection == "Instrumental" %}selected{% endif %}>Instrumental</option>
                         <option value="Feminina" {% if voice_selection == "Feminina" %}selected{% endif %}>Voz Feminina</option>
                         <option value="Masculina" {% if voice_selection == "Masculina" %}selected{% endif %}>Voz Masculina</option>
+                        <option value="revezando" {% if voice_selection == "revezando" %}selected{% endif %}>Masculina e Feminina (Revezando)</option>
                     </select>
                 </div>
                 <div>
@@ -37,8 +38,33 @@
                         <option value="Forró" {% if rhythm_selection == "Forró" %}selected{% endif %}>Forró</option>
                         <option value="Hip Hop" {% if rhythm_selection == "Hip Hop" %}selected{% endif %}>Hip Hop</option>
                         <option value="Funk" {% if rhythm_selection == "Funk" %}selected{% endif %}>Funk</option>
+                        <option value="Reggae" {% if rhythm_selection == "Reggae" %}selected{% endif %}>Reggae</option>
+                        <option value="Blues" {% if rhythm_selection == "Blues" %}selected{% endif %}>Blues</option>
+                        <option value="Country" {% if rhythm_selection == "Country" %}selected{% endif %}>Country</option>
+                        <option value="Clássica" {% if rhythm_selection == "Clássica" %}selected{% endif %}>Clássica</option>
+                        <option value="Metal" {% if rhythm_selection == "Metal" %}selected{% endif %}>Metal</option>
+                        <option value="MPB" {% if rhythm_selection == "MPB" %}selected{% endif %}>MPB</option>
+                        <option value="Bossa Nova" {% if rhythm_selection == "Bossa Nova" %}selected{% endif %}>Bossa Nova</option>
+                        <option value="Pagode" {% if rhythm_selection == "Pagode" %}selected{% endif %}>Pagode</option>
+                        <option value="Sertanejo" {% if rhythm_selection == "Sertanejo" %}selected{% endif %}>Sertanejo</option>
+                        <option value="Gospel" {% if rhythm_selection == "Gospel" %}selected{% endif %}>Gospel</option>
+                        <option value="Trap" {% if rhythm_selection == "Trap" %}selected{% endif %}>Trap</option>
+                        <option value="Lo-fi" {% if rhythm_selection == "Lo-fi" %}selected{% endif %}>Lo-fi</option>
                         <option value="Outro" {% if rhythm_selection == "Outro" %}selected{% endif %}>Outro (especifique no prompt)</option>
                     </select>
+                </div>
+                <div>
+                    <label for="music_duration">Duração (segundos):</label>
+                    <input type="number" id="music_duration" name="music_duration"
+                           min="30" max="300" value="{{ music_duration_selection | default(120) }}"
+                           required>
+                    <small>Entre 30 e 300 segundos.</small>
+                </div>
+                <div>
+                    <label for="main_instrument">Instrumento Principal (Opcional):</label>
+                    <input type="text" id="main_instrument" name="main_instrument"
+                           value="{{ main_instrument_selection | default('') }}"
+                           placeholder="Ex: Piano, Violão, Saxofone">
                 </div>
             </div>
         </div>
